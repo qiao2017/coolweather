@@ -86,16 +86,23 @@ public class ChooseAreaFragement extends Fragment{
                 if(currentLevel == LEVEL_PROVINCE){
                     selectedProvince = provinceList.get(i);
                     queryCities();
-                    Log.d("MMMMM", "MMMMM1");
                 } else if (currentLevel == LEVEL_CITY){
                     selectedCity = cityList.get(i);
                     queryCounties();
                 } else if (currentLevel == LEVEL_COUNTRY){
                     String weatherId = countryList.get(i).getWeatherId();
-                    Intent intent = new Intent(getActivity(), Weather.class);
-                    intent.putExtra("weather_id", weatherId);
-                    startActivity(intent);
-                    getActivity().finish();
+                    if (getActivity() instanceof MainActivity){
+
+                        Intent intent = new Intent(getActivity(), Weather.class);
+                        intent.putExtra("weather_id", weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                    } else if (getActivity() instanceof Weather){
+                        Weather activity = (Weather) getActivity();
+                        activity.drawerLayout.closeDrawers();
+                        activity.swipeRefreshLayout.setRefreshing(true);
+                        activity.requestWeather(weatherId);
+                    }
                 }
             }
         });
@@ -132,7 +139,6 @@ public class ChooseAreaFragement extends Fragment{
 
     //查询所有市
     private void queryCities(){
-        Log.d("MMMMM", "MMMMM2");
         titleText.setText(selectedProvince.getProvinceName());
         backButton.setVisibility(View.VISIBLE);
         cityList = DataSupport.where("provinceid = ? ",
@@ -195,12 +201,8 @@ public class ChooseAreaFragement extends Fragment{
                 if("province".equals(type)){
                     result = Utility.handleProvinceResponse(responseText);
                 }else if ("city".equals(type)){
-                    Log.d("MMMMMMM", type+type);
-                    Log.d("MMMMMMM", selectedProvince.getProvinceName()+selectedProvince.getId());
                     result = Utility.handleCityResponse(responseText, selectedProvince.getId());
                 }else if ("country".equals(type)){
-                    Log.d("MMMMMMM", type+type);
-                    Log.d("MMMMMMM", selectedCity.getCityName());
                     result = Utility.handleCountryResponse(responseText, selectedCity.getId());
                 }
                 if (result){
