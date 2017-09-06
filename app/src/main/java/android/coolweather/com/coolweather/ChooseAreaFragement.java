@@ -1,6 +1,7 @@
 package android.coolweather.com.coolweather;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.coolweather.com.coolweather.db.City;
 import android.coolweather.com.coolweather.db.Country;
 import android.coolweather.com.coolweather.db.Province;
@@ -89,6 +90,12 @@ public class ChooseAreaFragement extends Fragment{
                 } else if (currentLevel == LEVEL_CITY){
                     selectedCity = cityList.get(i);
                     queryCounties();
+                } else if (currentLevel == LEVEL_COUNTRY){
+                    String weatherId = countryList.get(i).getWeatherId();
+                    Intent intent = new Intent(getActivity(), Weather.class);
+                    intent.putExtra("weather_id", weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
